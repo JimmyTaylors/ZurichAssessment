@@ -1,0 +1,188 @@
+﻿@model IEnumerable<InsurancePlan>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Available Insurance Plans</h2>
+
+<div class="row">
+    @foreach (var plan in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <img src="@plan.imgBannerURL" class="img-fluid w-100 h-100 object-cover" />
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@plan.PlanName</h5>
+                    <p class="card-text">@plan.Description</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Price: $@plan.Price</h6>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-planName="@plan.PlanName" data-bs-planDesc="@plan.Description" data-bs-planId="@plan.Id" data-bs-planPrice="@plan.Price">
+                        More Info
+                    </button>
+                    @* <div class="row">
+                        <div class="col-md-6 mb-4">
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <a href="@Url.Action("Checkout", "Home", new { id = plan.Id })" class="btn btn-primary w-100">Select</a>
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="planForm" method="get" action="@Url.Action("Checkout", "Home")">
+                <input type="hidden" name="planId" id="planId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPlanTitle"> Plan Name</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3 id="modalPlanDesc">Plan Description</h3>
+                    <div class="accordion" id="accordionPanelsStayOpenExample">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveChangesBtn">Select This Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+            function loadAccordionData(data) {
+            // Group data by OtherInfoTypeId
+            const groupedData = data.reduce((acc, item) => {
+                if (!acc[item.otherInfoTypeId]) {
+                    acc[item.otherInfoTypeId] = [];
+                }
+                acc[item.otherInfoTypeId].push(item);
+                return acc;
+            }, {});
+
+            // Get the accordion container
+            const accordionContainer = document.getElementById('accordionPanelsStayOpenExample');
+            // Remove all child elements of the accordion container
+            $('#accordionPanelsStayOpenExample').empty();
+
+            // Define mapping for OtherInfoTypeId to titles
+            const typeTitles = {
+                1: 'Coverage',
+                2: 'Benefit',
+                3: 'Brochure URL',
+                4: 'Eligible'
+            };
+
+            // Loop through the grouped data and create the accordion items
+            Object.keys(groupedData).forEach((otherInfoTypeId, index) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.classList.add('accordion-item');
+
+                // Create the accordion header (button)
+                const accordionHeader = document.createElement('h2');
+                accordionHeader.classList.add('accordion-header');
+                accordionHeader.id = `panelsStayOpen-heading${index + 1}`;
+
+                const button = document.createElement('button');
+                button.classList.add('accordion-button');
+                button.setAttribute('type', 'button');
+                button.setAttribute('data-bs-toggle', 'collapse');
+                button.setAttribute('data-bs-target', `#panelsStayOpen-collapse${index + 1}`);
+                button.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
+                button.setAttribute('aria-controls', `panelsStayOpen-collapse${index + 1}`);
+                button.textContent = typeTitles[otherInfoTypeId];  // Set the main title based on OtherInfoTypeId
+
+                accordionHeader.appendChild(button);
+                accordionItem.appendChild(accordionHeader);
+
+                // Create the accordion collapse section
+                const accordionCollapse = document.createElement('div');
+                accordionCollapse.id = `panelsStayOpen-collapse${index + 1}`;
+                accordionCollapse.classList.add('accordion-collapse', 'collapse');
+                if (index === 0) accordionCollapse.classList.add('show'); // Make the first one open by default
+                accordionCollapse.setAttribute('aria-labelledby', `panelsStayOpen-heading${index + 1}`);
+
+                // Create the accordion body
+                const accordionBody = document.createElement('div');
+                accordionBody.classList.add('accordion-body');
+
+                // Loop through the grouped items and add each feature as a header with its description
+                groupedData[otherInfoTypeId].forEach(item => {
+                    // Create a subsection for each feature
+                    if(item.otherInfoTypeId != 3){
+                        const featureHeader = document.createElement('h5');
+                        featureHeader.textContent = item.features;
+                        accordionBody.appendChild(featureHeader);
+                    }
+                    
+                    // Create the description for each feature
+                    const featureDescription = document.createElement('p');
+                    // If the description is a URL, create a link
+                    if (item.description.startsWith('http')) {
+                        const link = document.createElement('a');
+                        link.href = item.description;
+                        link.classList.add('btn', 'btn-link');
+                        link.setAttribute('target', '_blank');
+                        link.textContent = 'Check out this Brochure';
+                        featureDescription.appendChild(link);
+                    } else {
+                        featureDescription.textContent = item.description;
+                    }
+                    accordionBody.appendChild(featureDescription);
+                });
+
+                accordionCollapse.appendChild(accordionBody);
+                accordionItem.appendChild(accordionCollapse);
+
+                // Append the new accordion item to the container
+                accordionContainer.appendChild(accordionItem);
+            });
+        }
+
+        $(document).ready(function() {
+            var exampleModal = document.getElementById('exampleModal')
+            exampleModal.addEventListener('show.bs.modal', function (event) {
+                // Button that triggered the modal
+                var button = event.relatedTarget
+
+                // Extract info from data-bs-* attributes
+                var planId = button.getAttribute('data-bs-planId');
+                var modalPlanTitle = button.getAttribute('data-bs-planName');
+                var modalPlanDesc = button.getAttribute('data-bs-planDesc');
+                var modalPlanPrice = button.getAttribute('data-bs-planPrice');
+
+                $('#planId').val(planId);
+                $('#modalPlanTitle').html(modalPlanTitle);
+                $('#modalPlanDesc').html(modalPlanDesc + '<br>Price: $' + modalPlanPrice);
+                
+                //$('#benefitPlan').html(text);
+
+                
+                var apiUrl = 'http://localhost:5106/api/API/GetInsurancePlanOtherInfoByInsuranceId?insurancePlanId=' + planId;
+
+                // If necessary, you could initiate an AJAX request here
+                $.ajax({
+                    url: apiUrl,  
+                    type: 'GET',   
+                    dataType: 'json',          
+                    success: function(response) {
+                        loadAccordionData(response.insurancePlanOtherInfos);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+}

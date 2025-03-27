@@ -1,0 +1,47 @@
+﻿@model Order
+@{
+    var plan = ViewBag.Plan as InsurancePlan;
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<!-- Page Header -->
+<div class="text-center mb-5">
+    <h1 class="display-4 text-success">Order Confirmed!</h1>
+    <p class="lead">Your insurance policy has been successfully processed.</p>
+</div>
+
+<!-- Order Summary Card -->
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <h5 class="card-title text-center">Policy Details</h5>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <strong>Policy Number:</strong> @Model.PolicyNumber
+            </li>
+            <li class="list-group-item">
+                <strong>Insurance Plan:</strong> @plan.PlanName
+            </li>
+            <li class="list-group-item">
+                <strong>Price:</strong> $@Model.TotalAmount
+            </li>
+            <li class="list-group-item">
+                <strong>Status:</strong> @Model.PaymentStatus
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Confirmation Message -->
+<div class="alert alert-success mt-4" role="alert">
+    <strong>Thank you for choosing our insurance plan!</strong> Your policy has been successfully activated. You will receive an email with your policy details shortly.
+</div>
+
+<!-- Call-to-Action Section -->
+<div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+    <a href="/" class="btn btn-outline-secondary btn-lg">Go to Homepage</a>
+</div>
+
+<!-- Optional: Additional Links or Details -->
+<div class="text-center mt-5">
+    <p>If you have any questions, feel free to <a href="mailto:support@example.com">contact support</a>.</p>
+</div>

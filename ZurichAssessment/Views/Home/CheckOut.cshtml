@@ -1,0 +1,67 @@
+﻿@model Customer
+@{
+	var plan = ViewBag.Plan as InsurancePlan;
+}
+
+@{
+	ViewData["Title"] = "Checkout" + plan.PlanName;
+}
+
+<!-- Page Header -->
+<h1 class="text-center mb-4">Checkout</h1>
+
+<!-- Plan Information -->
+<div class="card mb-4">
+	<div class="card-body">
+		<h5 class="card-title">@plan.PlanName</h5>
+		@* <p><strong>Coverage:</strong> @plan.Coverage</p> *@
+		<p><strong>Price:</strong> $@plan.Price</p>
+		@* <p><strong>Benefits:</strong> @plan.Benefits</p> *@
+	</div>
+</div>
+
+<div class="card mb-4">
+	<div class="card-body">
+
+		<form method="post">
+			<input type="hidden" id="planId" name="planId" value="@plan.Id" />
+			<div class="mb-3">
+				<label for="Name" class="form-label">Full Name</label>
+				<input type="text" class="form-control" id="FullName" name="FullName" placeholder="Enter your full name" required />
+			</div>
+			<div class="mb-3">
+				<label for="DateOfBirth" class="form-label">Date of Birth</label>
+				<input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth" required />
+			</div>
+			<div class="mb-3">
+				<label for="PhoneNumber" class="form-label">Contact Number</label>
+				<input type="tel" class="form-control" id="Contact" name="Contact" placeholder="Enter your phone number" pattern="^\+?[1-9]\d{1,14}$" title="Phone number should be in international format, e.g., +1234567890" required />
+			</div>
+			<div class="mb-3">
+				<label for="Contact" class="form-label">Email Address</label>
+				<input type="email" class="form-control" id="Email" name="Email" placeholder="Enter your email address" required />
+			</div>
+			<div class="mb-3">
+				<label for="Address" class="form-label">Address</label>
+				<input type="text" class="form-control" id="Address" name="Address" placeholder="Enter your full address" required />
+			</div>
+			<div class="card mb-4">
+				<div class="card-body">
+					<h5 class="card-title">Payment Information</h5>
+					<p><strong>Total Amount:</strong> $@plan.Price</p>
+					<div class="alert alert-info">
+						<strong>Note:</strong> You will be redirected to the payment gateway after submitting this form.
+					</div>
+				</div>
+			</div>
+			<div class="d-grid gap-2">
+				<button type="submit" class="btn btn-success btn-lg">Proceed to Payment</button>
+			</div>
+		</form>
+
+		<div class="text-center mt-3">
+			<a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">Back to Insurance Plans</a>
+		</div>
+
+	</div>
+</div>
