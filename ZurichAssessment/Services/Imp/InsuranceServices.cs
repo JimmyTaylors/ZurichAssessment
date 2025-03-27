@@ -159,7 +159,7 @@ namespace ZurichAssessment.Services.Imp
                     if (orderInfo != null)
                     {
                         // After that Send Confirmation Email [Done]
-                        await _emailSender.SendEmailAsync("shirlnie0614@gmail.com", "I Love You", "Do you love me?");
+                        await _emailSender.SendEmailAsync(customer.Email, "Zurich Insurance", "Thank You for your purchased. Your policy number: " + orderInfo.PolicyNumber);
 
                         return new GetOrderResponseModel()
                         {
